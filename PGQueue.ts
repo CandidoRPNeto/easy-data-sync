@@ -1,35 +1,38 @@
-
 import { Pool } from "pg";
 import { Query } from "./Query";
 import * as fs from 'fs';
 import * as path from 'path';
+import { ConnectInfo, DBQueue } from "./DBQueue";
 
-export class DB {
+export interface PGConnectInfo extends ConnectInfo{
+    host: string;
+    port: number;
+    user: string;
+    database: string;
+    password: string;
+}
+
+export class PGQueue implements DBQueue{
     private pool!: Pool;
     private queries: Query[] = [];
 
-    public postgres(host: string, port: number, user: string, database: string, password: string): DB {
-        this.pool = new Pool({ user, host, database, password, port });
-        return this;
-    }
-
-    public mysql(host: string, port: number, user: string, database: string, password: string): DB {
-        this.pool = new Pool({ user, host, database, password, port });
+    public db_connect(connect: PGConnectInfo): DBQueue {
+        this.pool = new Pool(connect);
         return this;
     }
     
-    public addQuery(query:Query){
+    public add_query(query:Query) {
         this.queries.push(query);
     }
 
-    public async runQueries(){
-        this.prepareEssentialDir();
+    public async run_queries() {
+        this.prepare_essential_dir();
         const client = await this.pool.connect();
         for (let q of this.queries) { q.execute(client); }
         client.release();
     }
     
-    private prepareEssentialDir() {
+    private prepare_essential_dir() {
         const logDir = path.join(__dirname, 'log');
         const listDir = path.join(__dirname, 'list');
         if (!fs.existsSync(logDir))  fs.mkdirSync(logDir);
