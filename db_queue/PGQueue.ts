@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { Query } from "./Query";
+import { Query } from "../queries/Query";
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConnectInfo, DBQueue } from "./DBQueue";
