@@ -12,7 +12,7 @@ export interface PGConnectInfo extends ConnectInfo{
     password: string;
 }
 
-export class PGQueue implements DBQueue{
+export class PGQueue implements DBQueue {
     private pool!: Pool;
     private queries: Query[] = [];
 
